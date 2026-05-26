@@ -1,0 +1,7 @@
+# Ignore local database data and caches
+backend_data/
+__pycache__/
+*.pyc
+
+# Ignore macOS system files
+.DS_Store

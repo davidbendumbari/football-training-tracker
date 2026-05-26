@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Training Tracker — 4-Week Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pitch: #0a1a0f;
+  --pitch-mid: #0f2318;
+  --pitch-light: #173020;
+  --grass: #1a9e4a;
+  --grass-bright: #22c55e;
+  --grass-dim: #0f6e32;
+  --line: rgba(255,255,255,0.07);
+  --white: #f0f4f0;
+  --white-dim: rgba(240,244,240,0.6);
+  --white-faint: rgba(240,244,240,0.2);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.15);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.15);
+  --coral: #f97316;
+  --coral-dim: rgba(249,115,22,0.15);
+  --red: #ef4444;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+  --radius: 6px;
+  --radius-lg: 12px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body {
+  background: var(--pitch);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* pitch line texture */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 79px,
+      rgba(255,255,255,0.02) 79px,
+      rgba(255,255,255,0.02) 80px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 79px,
+      rgba(255,255,255,0.02) 79px,
+      rgba(255,255,255,0.02) 80px
+    );
+  pointer-events:none;
+  z-index:0;
+}
+
+/* HEADER */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 2.5rem 2rem 0;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo-block h1 {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.logo-block h1 span {
+  color: var(--grass-bright);
+}
+
+.logo-block .sub {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-top: 4px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 1px;
+  background: var(--line);
+  border: 0.5px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.hstat {
+  padding: 12px 20px;
+  background: var(--pitch-mid);
+  text-align: center;
+  min-width: 80px;
+}
+
+.hstat-val {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--grass-bright);
+}
+
+.hstat-lbl {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-top: 2px;
+}
+
+/* NAV */
+nav {
+  position: relative;
+  z-index: 10;
+  max-width: 960px;
+  margin: 1.5rem auto 0;
+  padding: 0 2rem;
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .2s, border-color .2s;
+}
+
+.nav-btn:hover { color: var(--white); }
+.nav-btn.active {
+  color: var(--grass-bright);
+  border-bottom-color: var(--grass-bright);
+}
+
+/* MAIN */
+main {
+  position: relative;
+  z-index: 10;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.screen { display: none; animation: fadeIn .25s ease; }
+.screen.active { display: block; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* WEEK SELECTOR */
+.week-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.wsb {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--white-dim);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.wsb:hover { border-color: var(--grass-bright); color: var(--white); }
+.wsb.active { background: var(--grass); border-color: var(--grass); color: #fff; }
+
+/* WEEK TITLE */
+.week-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.week-title span {
+  color: var(--grass-bright);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* DAY GRID */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+
+.day-card {
+  background: var(--pitch-mid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background .2s;
+}
+
+.day-card:hover:not(.rest-card) { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.day-card.rest-card { cursor: default; opacity: 0.5; }
+.day-card.done-card { border-color: var(--grass-dim); }
+.day-card.done-card::before { background: var(--grass-bright); }
+.day-card.finish-card::before { background: var(--amber); }
+.day-card.winger-card::before { background: var(--purple); }
+.day-card.striker-card::before { background: var(--coral); }
+.day-card.stamina-card::before { background: var(--blue); }
+
+.day-name {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-bottom: 6px;
+}
+
+.day-focus {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.day-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.tag-finish { background: var(--amber-dim); color: var(--amber); }
+.tag-winger { background: var(--purple-dim); color: var(--purple); }
+.tag-striker { background: var(--coral-dim); color: var(--coral); }
+.tag-stamina { background: var(--blue-dim); color: var(--blue); }
+.tag-done { background: rgba(34,197,94,0.15); color: var(--grass-bright); }
+.tag-rest { background: rgba(255,255,255,0.05); color: var(--white-dim); }
+.tag-optional { background: rgba(255,255,255,0.05); color: var(--white-dim); }
+
+/* SESSIONS */
+.session-block {
+  background: var(--pitch-mid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.session-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background .15s;
+  user-select: none;
+}
+
+.session-header:hover { background: var(--pitch-light); }
+
+.session-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session-day-badge {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--grass-bright);
+  background: rgba(34,197,94,0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.session-title-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.session-desc {
+  font-size: 12px;
+  color: var(--white-dim);
+  margin-top: 2px;
+}
+
+.session-chevron {
+  font-size: 18px;
+  color: var(--white-dim);
+  transition: transform .2s;
+}
+
+.session-block.open .session-chevron { transform: rotate(90deg); }
+
+.session-drills {
+  display: none;
+  padding: 0 20px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.session-block.open .session-drills { display: block; }
+
+.drill-row {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.drill-row:last-child { border-bottom: none; }
+
+.drill-num {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--grass-bright);
+  opacity: 0.4;
+  min-width: 28px;
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.drill-content { flex: 1; }
+
+.drill-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.drill-desc {
+  font-size: 13px;
+  color: var(--white-dim);
+  line-height: 1.6;
+}
+
+.drill-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--grass-bright);
+  background: rgba(34,197,94,0.1);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+/* LOG FORM */
+.log-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media(max-width:680px){ .log-panel{ grid-template-columns:1fr; } }
+
+.form-card {
+  background: var(--pitch-mid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.form-card-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-bottom: 5px;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  background: var(--pitch-light);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--white);
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: border-color .15s;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--grass-bright);
+}
+
+.form-group select option { background: #0f2318; }
+
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.star-btn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.15);
+  transition: color .1s, transform .1s;
+  padding: 0;
+  line-height: 1;
+}
+
+.star-btn.lit { color: var(--amber); }
+.star-btn:hover { transform: scale(1.2); }
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--grass);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  margin-top: 4px;
+}
+
+.submit-btn:hover { background: var(--grass-bright); transform: translateY(-1px); }
+.submit-btn:active { transform: translateY(0); }
+
+.log-list { max-height: 480px; overflow-y: auto; }
+
+.log-entry {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  animation: fadeIn .2s ease;
+}
+
+.log-entry:last-child { border-bottom: none; }
+
+.log-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.log-date {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: var(--white);
+}
+
+.log-stars { color: var(--amber); font-size: 13px; letter-spacing: 1px; }
+
+.log-notes {
+  font-size: 12px;
+  color: var(--white-dim);
+  line-height: 1.6;
+  margin-top: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--white-faint);
+}
+
+.empty-state-icon { font-size: 3rem; margin-bottom: .5rem; opacity: .3; }
+.empty-state-text { font-size: 13px; letter-spacing: .5px; }
+
+/* PROGRESS */
+.progress-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media(max-width:600px){ .progress-grid{ grid-template-columns:1fr; } }
+
+.prog-card {
+  background: var(--pitch-mid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.prog-card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.prog-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.prog-lbl {
+  font-size: 12px;
+  color: var(--white-dim);
+  min-width: 110px;
+}
+
+.prog-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .5s ease;
+}
+
+.prog-count {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  min-width: 20px;
+  text-align: right;
+}
+
+.big-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.big-stat {
+  background: var(--pitch-mid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+}
+
+.big-stat-val {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--grass-bright);
+}
+
+.big-stat-lbl {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-top: 4px;
+}
+
+/* DRILL MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--pitch-mid);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  animation: fadeIn .2s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--white-dim);
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.modal-close:hover { color: var(--white); }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.modal-meta {
+  font-size: 12px;
+  color: var(--white-dim);
+  margin-bottom: 16px;
+  letter-spacing: .5px;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--grass);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 200;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all .3s ease;
+  pointer-events: none;
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <h1>Training<span>Tracker</span></h1>
+    <div class="sub">4-Week Individual Football Programme</div>
+  </div>
+  <div class="header-stats">
+    <div class="hstat">
+      <div class="hstat-val" id="hs-done">0</div>
+      <div class="hstat-lbl">Sessions</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="hs-week">1</div>
+      <div class="hstat-lbl">Week</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="hs-pct">0%</div>
+      <div class="hstat-lbl">Progress</div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="switchTab('plan',this)">Plan</button>
+  <button class="nav-btn" onclick="switchTab('sessions',this)">Sessions</button>
+  <button class="nav-btn" onclick="switchTab('log',this)">Log</button>
+  <button class="nav-btn" onclick="switchTab('progress',this)">Progress</button>
+</nav>
+
+<main>
+
+<!-- PLAN TAB -->
+<div id="tab-plan" class="screen active">
+  <div class="week-selector" id="plan-week-sel"></div>
+  <div class="week-title" id="plan-week-title"></div>
+  <div class="day-grid" id="plan-day-grid"></div>
+</div>
+
+<!-- SESSIONS TAB -->
+<div id="tab-sessions" class="screen">
+  <div class="week-selector" id="sess-week-sel"></div>
+  <div id="sess-list"></div>
+</div>
+
+<!-- LOG TAB -->
+<div id="tab-log" class="screen">
+  <div class="log-panel">
+    <div class="form-card">
+      <div class="form-card-title">Log a session</div>
+
+      <div class="form-group">
+        <label>Week</label>
+        <select id="lf-week">
+          <option value="1">Week 1</option>
+          <option value="2">Week 2</option>
+          <option value="3">Week 3</option>
+          <option value="4">Week 4</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Day</label>
+        <select id="lf-day">
+          <option value="Mon">Monday</option>
+          <option value="Wed">Wednesday</option>
+          <option value="Fri">Friday</option>
+          <option value="Sat">Saturday (optional)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Focus area</label>
+        <select id="lf-focus">
+          <option value="finish">Finishing</option>
+          <option value="winger">Winger movement</option>
+          <option value="striker">Striker movement</option>
+          <option value="stamina">Stamina</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Session rating</label>
+        <div class="star-rating" id="star-rating">
+          <button class="star-btn" data-v="1" onclick="setRating(1)">★</button>
+          <button class="star-btn" data-v="2" onclick="setRating(2)">★</button>
+          <button class="star-btn" data-v="3" onclick="setRating(3)">★</button>
+          <button class="star-btn" data-v="4" onclick="setRating(4)">★</button>
+          <button class="star-btn" data-v="5" onclick="setRating(5)">★</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="lf-notes" placeholder="What went well? What needs work?"></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="saveLog()">Save session</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">Session history</div>
+      <div class="log-list" id="log-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div id="tab-progress" class="screen">
+  <div class="big-stat-grid" id="big-stats"></div>
+  <div class="progress-grid">
+    <div class="prog-card">
+      <div class="prog-card-title">Focus breakdown</div>
+      <div id="focus-bars"></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-card-title">Weekly completion</div>
+      <div id="week-bars"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Session saved ✓</div>
+
+<script>
+const PLAN = [
+  {week:1,label:"Foundation",sub:"Build your base",days:[
+    {day:"Mon",type:"train",focus:"Finishing",tag:"finish",desc:"Shooting basics & accuracy from zones",drills:[
+      {n:1,name:"Warm-up & dynamic stretch",time:"15 min",desc:"Light jog, hip circles, lunges, high knees — get the body ready."},
+      {n:2,name:"Static ball control",time:"10 min",desc:"Juggling, inside/outside touches, sole rolls. No pressure, just feel."},
+      {n:3,name:"Zone finishing — 4 zones",time:"30 min",desc:"Place cones to mark 4 shooting zones (inside box, edge of box, angle left, angle right). 5 shots per zone, focus on technique not power. 5 sets."},
+      {n:4,name:"First-touch + shoot",time:"20 min",desc:"Use rebounder or throw ball against wall. Control with one touch, shoot immediately. Alternate feet each rep."},
+      {n:5,name:"Stamina run — base intervals",time:"25 min",desc:"5 min easy jog → 4×(3 min moderate run, 1 min walk) → 5 min cool-down jog."},
+    ]},
+    {day:"Wed",type:"train",focus:"Winger movement",tag:"winger",desc:"Wide runs, crossing positions & 1v1 beating",drills:[
+      {n:1,name:"Warm-up",time:"10 min",desc:"Light jog, butt kicks, leg swings, dynamic stretching."},
+      {n:2,name:"Cone channel runs",time:"20 min",desc:"Set 5 cones in a straight wide channel. Practice overlapping run, underlapping run, diagonal cut inside. 10 reps each direction."},
+      {n:3,name:"Check-in & burst run",time:"20 min",desc:"Walk slowly to a cone, check shoulder, then explosive burst diagonally (like checking off a defender). 4 sets × 8 reps."},
+      {n:4,name:"Cross & finish",time:"30 min",desc:"Sprint wide with ball, drive a low cross to a target cone in the 6-yard box. Alternate sides. 5 sets × 6 crosses each side."},
+      {n:5,name:"Pitch width shuttles",time:"20 min",desc:"Run full pitch width 10 times. Rest 30s between each. Time yourself — aim to beat each set."},
+    ]},
+    {day:"Fri",type:"train",focus:"Stamina",tag:"stamina",desc:"Endurance run + ball work under fatigue",drills:[
+      {n:1,name:"Warm-up jog",time:"10 min",desc:"Easy pace, loose and relaxed."},
+      {n:2,name:"Continuous run",time:"30 min",desc:"Steady-state run at a pace you can hold for 30 min. No stopping. This builds your aerobic base."},
+      {n:3,name:"Striker movement drill",time:"20 min",desc:"Set 4 cones in a square. Sprint to top-left, diagonal run to bottom-right, backpedal to start. 3 sets × 8 reps."},
+      {n:4,name:"Finishing under fatigue",time:"20 min",desc:"After the run, take 10 shots from penalty spot. Test your accuracy when tired — this is match-realistic."},
+    ]},
+    {day:"Sat",type:"optional",focus:"Bonus",tag:"finish",desc:"Optional: extra finishing or recovery run",drills:[
+      {n:1,name:"Recovery jog",time:"20 min",desc:"Very easy pace — this is active recovery, not a workout."},
+      {n:2,name:"Penalty practice",time:"20 min",desc:"20 penalties. Focus on picking corners. Track score: keep a weekly penalty tally."},
+    ]},
+    {day:"Tue",type:"rest",desc:"Rest / light stretch"},
+    {day:"Thu",type:"rest",desc:"Rest / light stretch"},
+    {day:"Sun",type:"rest",desc:"Full rest"},
+  ]},
+  {week:2,label:"Sharpening",sub:"Weak foot & combinations",days:[
+    {day:"Mon",type:"train",focus:"Finishing",tag:"finish",desc:"Weak foot, volleys & combination play",drills:[
+      {n:1,name:"Warm-up",time:"15 min",desc:"Dynamic stretch, 5 min jog."},
+      {n:2,name:"Weak foot finishing",time:"25 min",desc:"Only use your weak foot this block. Shots from inside box, 5 zones. 6 reps per zone × 4 sets. Commit fully."},
+      {n:3,name:"Volley practice",time:"25 min",desc:"Throw ball up, volley at goal. Start low and easy, increase height. Track how many hit the target."},
+      {n:4,name:"Combo: run + receive + shoot",time:"20 min",desc:"Sprint 10m, receive a pass from rebounder or self-throw, control and shoot in 2 touches. 5 sets × 8 reps."},
+      {n:5,name:"Stamina: 20-20-20 intervals",time:"20 min",desc:"20s sprint, 20s jog, 20s walk — repeat for 20 min. Builds explosive stamina fast."},
+    ]},
+    {day:"Wed",type:"train",focus:"Striker movement",tag:"striker",desc:"Diagonal runs, hold-up play & receiving",drills:[
+      {n:1,name:"Warm-up",time:"10 min",desc:"Dynamic stretch, activation jog."},
+      {n:2,name:"Diagonal striker runs",time:"20 min",desc:"From a starting cone, run diagonal to left cone, then peel back diagonal to right. Mimic striker runs in behind. 4 sets × 10 reps."},
+      {n:3,name:"Back-to-goal hold-up",time:"20 min",desc:"Stand with back to goal, receive a throw, lay off or turn into shooting position. Work on shielding and quick turns."},
+      {n:4,name:"Movement + finish",time:"25 min",desc:"Make a run from outside the box, receive a pass (throw or rebounder), finish in 2 touches. Vary angle of entry."},
+      {n:5,name:"Hill runs or long-stride sprints",time:"25 min",desc:"Find a hill or do long-stride sprints (50m). 8 reps with 45s rest. Builds explosive leg stamina."},
+    ]},
+    {day:"Fri",type:"train",focus:"Winger + Finishing",tag:"winger",desc:"Cut-inside drills, long-range & 3km time trial",drills:[
+      {n:1,name:"Warm-up",time:"10 min",desc:"Jog, dynamic stretch."},
+      {n:2,name:"Cut-inside drill",time:"25 min",desc:"Start wide, use outside foot to push ball forward, cut inside with inside foot past a cone-defender, shoot. 5 sets × 6 reps each side."},
+      {n:3,name:"Cross + finish (self-supply)",time:"20 min",desc:"Dribble wide, cross to target zone, sprint to meet your own cross. Finish off crossing drill."},
+      {n:4,name:"Long-range shooting",time:"20 min",desc:"Shots from 20–25m. Focus on keeping it low and on target. 30 shots total."},
+      {n:5,name:"3km time trial",time:"20 min",desc:"Run 3km and time yourself. Record the time — you will repeat this in Week 4 to measure improvement."},
+    ]},
+    {day:"Tue",type:"rest",desc:"Rest / light stretch"},
+    {day:"Thu",type:"rest",desc:"Rest / light stretch"},
+    {day:"Sat",type:"rest",desc:"Rest / light stretch"},
+    {day:"Sun",type:"rest",desc:"Full rest"},
+  ]},
+  {week:3,label:"Intensity",sub:"High pressure & longer runs",days:[
+    {day:"Mon",type:"train",focus:"Finishing",tag:"finish",desc:"High-pressure finishing & driven shots",drills:[
+      {n:1,name:"Warm-up",time:"15 min",desc:"Dynamic activation, jog."},
+      {n:2,name:"Sprint + shoot",time:"25 min",desc:"Sprint 20m, receive or dribble, shoot immediately. Simulates a real match scenario with no time to settle."},
+      {n:3,name:"1-touch finishing",time:"20 min",desc:"Ball rolls to you — shoot first touch, no control. Both feet. 40 reps."},
+      {n:4,name:"Finishing circuit",time:"30 min",desc:"Rotate 5 positions every 5 min: right foot, left foot, header height, volley, penalty. 6 shots per position."},
+      {n:5,name:"HIIT stamina",time:"20 min",desc:"6×(40s max sprint, 20s walk). Full recovery between sets is NOT allowed — keep moving during the 20s."},
+    ]},
+    {day:"Wed",type:"train",focus:"Winger movement",tag:"winger",desc:"Advanced wide runs & transition speed",drills:[
+      {n:1,name:"Warm-up",time:"10 min",desc:"Jog and mobility work."},
+      {n:2,name:"3-cone winger burst",time:"20 min",desc:"Set 3 cones: start, mid (jog), end (sprint). Practice checking, dropping off, then explosive burst. 4 sets × 8 reps."},
+      {n:3,name:"Overlap–underlap combo",time:"20 min",desc:"Alternate between overlap run and underlap run to the same endpoint. Build muscle memory for both options."},
+      {n:4,name:"Wide press & recover",time:"20 min",desc:"Sprint wide, play imaginary ball forward, then immediately sprint back to defensive position. Builds stamina and work rate."},
+      {n:5,name:"35-min easy jog",time:"35 min",desc:"Keep a conversational pace. Long slow running builds your aerobic engine for the whole month."},
+    ]},
+    {day:"Fri",type:"train",focus:"Striker + Stamina",tag:"striker",desc:"Striker intensity & full-session stamina",drills:[
+      {n:1,name:"Warm-up",time:"10 min",desc:"Jog, dynamic stretch, activation."},
+      {n:2,name:"Full striker sequence",time:"25 min",desc:"Run the full striker movement sequence: blind-side run → spin on ball → layoff → get return → finish. 5 sets × 6 reps."},
+      {n:3,name:"Receiving under pressure",time:"20 min",desc:"Throw ball hard at feet and chest alternately. Control quickly and play out. 30 reps each height."},
+      {n:4,name:"Full stamina session",time:"35 min",desc:"Continuous run at 70% effort with 4 sprint bursts (30s each) woven in at the 10, 18, 26, and 33-min marks."},
+    ]},
+    {day:"Sat",type:"optional",focus:"Bonus",tag:"finish",desc:"Optional: weak-foot only session",drills:[
+      {n:1,name:"Weak foot day",time:"60 min",desc:"Every drill this session: weak foot only. Finishing, dribbling, crossing. No exceptions. Fastest way to close the gap."},
+    ]},
+    {day:"Tue",type:"rest",desc:"Rest / light stretch"},
+    {day:"Thu",type:"rest",desc:"Rest / light stretch"},
+    {day:"Sun",type:"rest",desc:"Full rest"},
+  ]},
+  {week:4,label:"Peak & Measure",sub:"Test & compare your progress",days:[
+    {day:"Mon",type:"train",focus:"Full circuit",tag:"finish",desc:"Full combined session — all four areas",drills:[
+      {n:1,name:"Warm-up",time:"15 min",desc:"Full dynamic warm-up."},
+      {n:2,name:"Winger movement block",time:"25 min",desc:"Best drills from weeks 1-3: burst runs, cut-inside, cross & finish."},
+      {n:3,name:"Striker movement block",time:"20 min",desc:"Diagonal runs, spin & shoot, 1v0 sequences."},
+      {n:4,name:"Finishing block",time:"20 min",desc:"20 shots: mix of zones, feet, first-touch. Track goals scored."},
+      {n:5,name:"Stamina: 4km run",time:"25 min",desc:"Run 4km steady-state. Time it. This is your peak distance."},
+    ]},
+    {day:"Wed",type:"train",focus:"Finishing",tag:"finish",desc:"Personal finishing test — 50 shots across all zones",drills:[
+      {n:1,name:"Warm-up",time:"15 min",desc:"Light activation."},
+      {n:2,name:"Finishing test — 50 shots",time:"40 min",desc:"10 shots per zone across 5 zones. Record: goals scored, on-target shots, missed. Compare to week 1 mentally."},
+      {n:3,name:"Set piece finishing",time:"20 min",desc:"Free kicks from edge of box, corners (if you can set up), penalties. 10 reps each."},
+      {n:4,name:"Cool-down run",time:"15 min",desc:"Easy jog + full static stretch."},
+    ]},
+    {day:"Fri",type:"train",focus:"Stamina test",tag:"stamina",desc:"3km time trial vs Week 2 — measure your improvement",drills:[
+      {n:1,name:"Warm-up",time:"15 min",desc:"10 min easy jog, dynamic stretch."},
+      {n:2,name:"3km time trial",time:"20 min",desc:"Run 3km as fast as you can. Compare your time to Week 2's result. This is your measurable improvement."},
+      {n:3,name:"Recovery work",time:"15 min",desc:"10 min easy jog, full body stretch, foam roll if available."},
+      {n:4,name:"Month reflection",time:"10 min",desc:"Write down what improved most, what still needs work, and your plan for the next month."},
+    ]},
+    {day:"Tue",type:"rest",desc:"Rest / light stretch"},
+    {day:"Thu",type:"rest",desc:"Rest / light stretch"},
+    {day:"Sat",type:"rest",desc:"Full rest"},
+    {day:"Sun",type:"rest",desc:"Full rest"},
+  ]},
+];
+
+const DAY_ORDER = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let activePlanWeek = 0;
+let activeSessWeek = 0;
+let currentRating = 0;
+let logs = []; // Starts empty, fills from the Python backend container
+
+function loadLogsFromServer() {
+  // Point this to your Mac's IP address when loading from your iPhone
+  fetch('http://172.20.10.8:5010/api/logs')
+    .then(response => response.json())
+    .then(data => {
+      logs = data;
+      renderPlan(); // Refresh your plan board with the server data
+      renderLogTab(); // Refresh your history list
+    })
+    .catch(err => console.error("Error loading logs from Python backend:", err));
+}
+
+function switchTab(t, btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  btn.classList.add('active');
+  if(t==='plan') renderPlan();
+  if(t==='sessions') renderSessions();
+  if(t==='log') renderLogTab();
+  if(t==='progress') renderProgress();
+}
+
+function buildWeekSel(containerId, active, setter, callback){
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  PLAN.forEach((w,i)=>{
+    const b = document.createElement('button');
+    b.className = 'wsb' + (i===active?' active':'');
+    b.textContent = 'Week '+(i+1);
+    b.onclick = ()=>{ setter(i); callback(); };
+    c.appendChild(b);
+  });
+}
+
+function renderPlan(){
+  buildWeekSel('plan-week-sel', activePlanWeek, v=>{ activePlanWeek=v; }, renderPlan);
+  const w = PLAN[activePlanWeek];
+  document.getElementById('plan-week-title').innerHTML =
+    'Week '+(activePlanWeek+1)+': '+w.label+' <span>'+w.sub+'</span>';
+  const grid = document.getElementById('plan-day-grid');
+  grid.innerHTML = '';
+  const sorted = [...w.days].sort((a,b)=>DAY_ORDER.indexOf(a.day)-DAY_ORDER.indexOf(b.day));
+  sorted.forEach(d=>{
+    const done = logs.some(l=>l.week===(activePlanWeek+1)&&l.day===d.day);
+    const el = document.createElement('div');
+    const isRest = d.type==='rest';
+    el.className = 'day-card' +
+      (isRest ? ' rest-card' : '') +
+      (done ? ' done-card' : (isRest ? '' : ' '+d.tag+'-card'));
+    el.innerHTML = `
+      <div class="day-name">${d.day}</div>
+      <div class="day-focus">${isRest ? 'Rest' : (d.focus||d.desc)}</div>
+      <span class="day-tag ${done?'tag-done':isRest?'tag-rest':d.type==='optional'?'tag-optional':'tag-'+d.tag}">
+        ${done ? '✓ Done' : isRest ? 'Rest' : d.type==='optional' ? 'Optional' : d.focus}
+      </span>`;
+    if(!isRest) el.onclick = ()=>openDayModal(activePlanWeek, d);
+    grid.appendChild(el);
+  });
+  updateHeaderStats();
+}
+
+function openDayModal(weekIdx, d){
+  const tagLabel = {finish:'Finishing',winger:'Winger movement',striker:'Striker movement',stamina:'Stamina'};
+  const tagColor = {finish:' style="color:var(--amber)"',winger:' style="color:var(--purple)"',striker:' style="color:var(--coral)"',stamina:' style="color:var(--blue)"'};
+  const drillsHtml = d.drills.map(dr=>`
+    <div class="drill-row">
+      <div class="drill-num">${String(dr.n).padStart(2,'0')}</div>
+      <div class="drill-content">
+        <div class="drill-name">${dr.name}</div>
+        <div class="drill-desc">${dr.desc}</div>
+        <div class="drill-time">⏱ ${dr.time}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('modal-content').innerHTML = `
+    <div style="margin-bottom:16px">
+      <span class="day-tag tag-${d.tag}" style="margin-bottom:8px;display:inline-block">${tagLabel[d.tag]||d.focus}</span>
+      <div class="modal-title">${d.day} — ${d.focus||d.desc}</div>
+      <div class="modal-meta">Week ${weekIdx+1} · ${d.desc}</div>
+    </div>
+    ${drillsHtml}`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(!e || e.target===document.getElementById('modal-overlay')||e.target.classList.contains('modal-close'))
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function renderSessions(){
+  buildWeekSel('sess-week-sel', activeSessWeek, v=>{ activeSessWeek=v; }, renderSessions);
+  const w = PLAN[activeSessWeek];
+  const list = document.getElementById('sess-list');
+  list.innerHTML = '';
+  const trainDays = w.days.filter(d=>d.type!=='rest');
+  trainDays.forEach(d=>{
+    const block = document.createElement('div');
+    block.className = 'session-block';
+    const drillsHtml = d.drills.map(dr=>`
+      <div class="drill-row">
+        <div class="drill-num">${String(dr.n).padStart(2,'0')}</div>
+        <div class="drill-content">
+          <div class="drill-name">${dr.name}</div>
+          <div class="drill-desc">${dr.desc}</div>
+          <div class="drill-time">⏱ ${dr.time}</div>
+        </div>
+      </div>`).join('');
+    block.innerHTML = `
+      <div class="session-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="session-header-left">
+          <span class="session-day-badge">${d.day}</span>
+          <div>
+            <div class="session-title-text">${d.focus||d.desc}</div>
+            <div class="session-desc">${d.desc}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="day-tag tag-${d.tag}">${d.type==='optional'?'Optional':d.focus}</span>
+          <span class="session-chevron">›</span>
+        </div>
+      </div>
+      <div class="session-drills">${drillsHtml}</div>`;
+    list.appendChild(block);
+  });
+}
+
+function setRating(v){
+  currentRating = v;
+  document.querySelectorAll('.star-btn').forEach((b,i)=>{
+    b.classList.toggle('lit', i<v);
+  });
+}
+
+setRating(4);
+
+function saveLog(){
+  const w = parseInt(document.getElementById('lf-week').value);
+  const d = document.getElementById('lf-day').value;
+  const f = document.getElementById('lf-focus').value;
+  const n = document.getElementById('lf-notes').value.trim();
+  const entry = {week:w, day:d, focus:f, rating:currentRating, notes:n, date:new Date().toLocaleDateString('en-GB')};
+  
+  // Cast the data over the network to the Flask API
+  fetch('http://172.20.10.8:5010/api/logs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  })
+  .then(response => response.json())
+  .then(() => {
+    document.getElementById('lf-notes').value = '';
+    showToast('Session saved to Central Container ✓');
+    loadLogsFromServer(); // Re-fetch from container to sync up the UI
+  })
+  .catch(err => console.error("Error saving log to Python backend:", err));
+}
+
+function renderLogTab(){
+  const list = document.getElementById('log-list');
+  const focusMap = {finish:'Finishing',winger:'Winger',striker:'Striker',stamina:'Stamina'};
+  if(!logs.length){
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <div class="empty-state-text">No sessions logged yet.<br>Complete a session then log it here.</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = [...logs].reverse().map(l=>`
+    <div class="log-entry">
+      <div class="log-top">
+        <span class="log-date">W${l.week} · ${l.day} · ${l.date}</span>
+        <span class="day-tag tag-${l.focus}">${focusMap[l.focus]||l.focus}</span>
+      </div>
+      <div class="log-stars">${'★'.repeat(l.rating)}${'☆'.repeat(5-l.rating)}</div>
+      ${l.notes?`<div class="log-notes">${l.notes}</div>`:''}
+    </div>`).join('');
+}
+
+function renderProgress(){
+  const total = logs.length;
+  const avgRating = total ? (logs.reduce((a,l)=>a+l.rating,0)/total).toFixed(1) : '—';
+  const maxWeek = logs.reduce((a,l)=>Math.max(a,l.week),1);
+
+  document.getElementById('big-stats').innerHTML = `
+    <div class="big-stat"><div class="big-stat-val">${total}</div><div class="big-stat-lbl">Sessions logged</div></div>
+    <div class="big-stat"><div class="big-stat-val">${avgRating}</div><div class="big-stat-lbl">Avg rating</div></div>
+    <div class="big-stat"><div class="big-stat-val">${maxWeek}</div><div class="big-stat-lbl">Current week</div></div>
+    <div class="big-stat"><div class="big-stat-val">${Math.round((total/16)*100)}%</div><div class="big-stat-lbl">Month done</div></div>`;
+
+  const counts = {finish:0,winger:0,striker:0,stamina:0};
+  logs.forEach(l=>{ if(counts[l.focus]!==undefined) counts[l.focus]++; });
+  const maxC = Math.max(...Object.values(counts),1);
+  const focusLabels = {finish:'Finishing',winger:'Winger movement',striker:'Striker movement',stamina:'Stamina'};
+  const focusColors = {finish:'var(--amber)',winger:'var(--purple)',striker:'var(--coral)',stamina:'var(--blue)'};
+  document.getElementById('focus-bars').innerHTML = Object.entries(counts).map(([k,v])=>`
+    <div class="prog-row">
+      <span class="prog-lbl">${focusLabels[k]}</span>
+      <div class="prog-track"><div class="prog-fill" style="width:${Math.round((v/maxC)*100)}%;background:${focusColors[k]}"></div></div>
+      <span class="prog-count">${v}</span>
+    </div>`).join('');
+
+  document.getElementById('week-bars').innerHTML = [1,2,3,4].map(w=>{
+    const wl = logs.filter(l=>l.week===w).length;
+    const pct = Math.min(Math.round((wl/3)*100),100);
+    return `<div class="prog-row">
+      <span class="prog-lbl">Week ${w}</span>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:var(--grass)"></div></div>
+      <span class="prog-count">${wl}/3</span>
+    </div>`;
+  }).join('');
+}
+
+function updateHeaderStats(){
+  const total = logs.length;
+  document.getElementById('hs-done').textContent = total;
+  document.getElementById('hs-week').textContent = logs.reduce((a,l)=>Math.max(a,l.week),1);
+  document.getElementById('hs-pct').textContent = Math.round((total/16)*100)+'%';
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// Init by pulling data from the Python backend container
+loadLogsFromServer();
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+services:
+  # Service 1: The Python Backend API
+  backend:
+    image: python:3.10-slim
+    container_name: football-backend
+    ports:
+      - "5010:5000"
+    working_dir: /app
+    command: >
+      bash -c "pip install flask flask-cors && python app.py"
+    volumes:
+      - .:/app                  # Mounts app.py so changes update live
+      - ./backend_data:/app/data # Keeps your JSON data permanent on your Mac
+
+  # Service 2: The Frontend Web Server
+  frontend:
+    image: nginx:alpine
+    container_name: football-frontend
+    ports:
+      - "9010:80"
+    volumes:
+      # Map your html file dynamically as index.html inside nginx
+      - ./football_tracker.html:/usr/share/nginx/html/index.html
+    depends_on:
+      - backend
