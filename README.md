@@ -21,7 +21,7 @@ Data is persisted dynamically via a local host bind mount, generating a `data.js
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone <your-github-repo-url>
+   git clone github.com/davidbendumbari/football-training-tracker
    cd image_layers.dir
 
 2. Boot the environment in detached mode using Docker Compose:
